@@ -2,28 +2,7 @@ namespace NestedSharp;
 
 public partial class Cpu
 {
-	public void IncrementMemory(AddressingMode addressingMode)
-	{
-		var value = mem_read(get_operand_address(addressingMode));
-		value++;
-		mem_write(get_operand_address(addressingMode), value);
-		UpdateStatusNegativeFlag(value);
-		UpdateZeroFlag(value);
-	}
 
-	public void IncrementX()
-	{
-		_registerY = (byte)(_registerX + 1);
-		UpdateStatusNegativeFlag(_registerX);
-		UpdateZeroFlag(_registerX);
-	}
-
-	public void IncrementY()
-	{
-		_registerY = (byte)(_registerY + 1);
-		UpdateStatusNegativeFlag(_registerY);
-		UpdateZeroFlag(_registerY);
-	}
 
 	public void AddWithCarry(AddressingMode mode)
 	{
@@ -193,10 +172,71 @@ public partial class Cpu
 	public void PushProcessorStatus()
 	{
 		var flags = _status;
-		flags |= (byte)CpuFlags.BreakCommand;
-		flags |= (byte)CpuFlags.Unused;
+		SetFlag(ref flags, CpuFlags.BreakCommand);
+		SetFlag(ref flags, CpuFlags.Unused);
 		StackPush(flags);
 	}
 
+	public void PullAccumulator()
+	{
+		_registerA = StackPop();
+	}
+
+	public void PullProcessorStatus()
+	{
+		var flags = StackPop();
+		ClearFlag(ref flags,CpuFlags.BreakCommand);
+		ClearFlag(ref flags,CpuFlags.Unused);
+	}
+
+	#endregion
+	
+	#region Decrement_Increment_Instructions
+
+	public void IncrementMemory(AddressingMode addressingMode)
+	{
+		var value = mem_read(get_operand_address(addressingMode));
+		value++;
+		mem_write(get_operand_address(addressingMode), value);
+		UpdateStatusNegativeFlag(value);
+		UpdateZeroFlag(value);
+	}
+
+	public void DecrementMemory(AddressingMode addressingMode)
+	{
+		var value = mem_read(get_operand_address(addressingMode));
+		value--;
+		mem_write(get_operand_address(addressingMode), value);
+		UpdateStatusNegativeFlag(value);
+		UpdateZeroFlag(value);
+	}
+
+	public void IncrementX()
+	{
+		_registerY = (byte)(_registerX + 1);
+		UpdateStatusNegativeFlag(_registerX);
+		UpdateZeroFlag(_registerX);
+	}
+
+	public void DecrementX()
+	{
+		_registerX = (byte)(_registerX - 1);
+		UpdateStatusNegativeFlag(_registerX);
+		UpdateZeroFlag(_registerX);
+	}
+
+	public void IncrementY()
+	{
+		_registerY = (byte)(_registerY + 1);
+		UpdateStatusNegativeFlag(_registerY);
+		UpdateZeroFlag(_registerY);
+	}
+
+	public void DecrementY()
+	{
+		_registerY = (byte)(_registerY - 1);
+		UpdateStatusNegativeFlag(_registerY);
+		UpdateZeroFlag(_registerY);
+	}
 	#endregion
 }

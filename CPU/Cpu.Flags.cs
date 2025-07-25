@@ -38,19 +38,23 @@ public partial class Cpu
 		else
 			_status &= 0b1111_1110;
 	}
+	
+	private void ClearFlag(CpuFlags flag) => ClearFlag(ref _status, flag);
 
-	private void ClearFlag(CpuFlags flag)
+	private void ClearFlag(ref byte status, CpuFlags flag)
 	{
-		_status &= (byte)~(byte)flag;
+		status &= (byte)~(byte)flag;
 	}
 
-	private void SetFlag(CpuFlags flag)
+	public void SetFlag(CpuFlags flag) => SetFlag(ref _status, flag);
+	private void SetFlag(ref byte status, CpuFlags flag)
 	{
-		_status |= (byte)flag;
+		status |= (byte)flag;
 	}
 
-	private bool IsFlagSet(CpuFlags flag)
+	private bool IsFlagSet(CpuFlags flag) => IsFlagSet(_status, flag);
+	private bool IsFlagSet(byte status, CpuFlags flag)
 	{
-		return (_status & (byte)flag) != 0;
+		return (status & (byte)flag) != 0;
 	}
 }
