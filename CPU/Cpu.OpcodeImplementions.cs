@@ -193,9 +193,21 @@ public partial class Cpu
 	public void PushProcessorStatus()
 	{
 		var flags = _status;
-		flags |= (byte)CpuFlags.BreakCommand;
-		flags |= (byte)CpuFlags.Unused;
+		SetFlag(ref flags, CpuFlags.BreakCommand);
+		SetFlag(ref flags, CpuFlags.Unused);
 		StackPush(flags);
+	}
+
+	public void PullAccumulator()
+	{
+		_registerA = StackPop();
+	}
+
+	public void PullProcessorStatus()
+	{
+		var flags = StackPop();
+		ClearFlag(ref flags,CpuFlags.BreakCommand);
+		ClearFlag(ref flags,CpuFlags.Unused);
 	}
 
 	#endregion
