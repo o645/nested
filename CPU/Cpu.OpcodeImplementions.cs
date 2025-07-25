@@ -4,16 +4,7 @@ public partial class Cpu
 {
 
 
-	public void AddWithCarry(AddressingMode mode)
-	{
-		var value = mem_read(get_operand_address(mode));
-		var carry = _status & 0b0000_0001;
-		var a = _registerA + value + carry;
-		_registerA = (byte)a;
-		UpdateZeroFlag(_registerA);
-		UpdateStatusNegativeFlag(_registerA);
-		if ((a & 0b11110000) != 0) UpdateStatusCarryFlag(true);
-	}
+
 
 	public void AndWithAccumulator(AddressingMode mode)
 	{
@@ -237,6 +228,29 @@ public partial class Cpu
 		_registerY = (byte)(_registerY - 1);
 		UpdateStatusNegativeFlag(_registerY);
 		UpdateZeroFlag(_registerY);
+	}
+	#endregion
+
+	#region Arithmetic_Instructions
+
+	public void AddWithCarry(AddressingMode mode)
+	{
+		var value = mem_read(get_operand_address(mode));
+		var carry = IsFlagSet(CpuFlags.Carry) ? 1 : 0;
+		_registerA = (byte)(_registerA + value + carry);
+		UpdateZeroFlag(_registerA);
+		UpdateStatusNegativeFlag(_registerA);
+		if (_registerA + value + carry > Byte.MaxValue) UpdateStatusCarryFlag(true);
+	}
+
+	public void SubtractWithCarry(AddressingMode mode)
+	{
+		var value = mem_read(get_operand_address(mode));
+		var carry = IsFlagSet(CpuFlags.Carry) ? 1 : 0;
+		_registerA  = (byte)(_registerA - value - carry);
+		UpdateZeroFlag(_registerA);
+		UpdateStatusNegativeFlag(_registerA);
+		if (_registerA + value + carry > Byte.MaxValue) UpdateStatusCarryFlag(true);
 	}
 	#endregion
 }
