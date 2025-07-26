@@ -143,6 +143,34 @@ public partial class Cpu
 
 	#region Memory
 
+	private byte mem_read(AddressingMode mode)
+	{
+		if (mode == AddressingMode.Accumulator)
+		{
+			return _registerA;
+		}
+		else
+		{
+			return mem_read(get_operand_address(mode));
+		}
+	}
+
+	private ushort mem_read_u16(AddressingMode mode) => mem_read_u16(get_operand_address(mode));
+
+	private void mem_write_u16(AddressingMode mode, ushort value) => mem_write_u16(get_operand_address(mode), value);
+
+	private void mem_write(AddressingMode mode, byte value)
+	{
+		if (mode == AddressingMode.Accumulator)
+		{
+			_registerA = value;
+		}
+		else
+		{
+			mem_write(get_operand_address(mode), value);
+		}
+	}
+
 	private byte mem_read(ushort address)
 	{
 		return _memory[address];
@@ -160,10 +188,10 @@ public partial class Cpu
 		return (ushort)((high << 8) | low);
 	}
 
-	private void mem_write_u16(ushort address, ushort data)
+	private void mem_write_u16(ushort address, ushort value)
 	{
-		var low = (byte)(data & 0xff);
-		var high = (byte)((data >> 8) & 0xff);
+		var low = (byte)(value & 0xff);
+		var high = (byte)((value >> 8) & 0xff);
 		mem_write(address, low);
 		mem_write((ushort)(address + 1), high);
 	}
