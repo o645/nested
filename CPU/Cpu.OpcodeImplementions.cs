@@ -295,19 +295,79 @@ public partial class Cpu
 
 	#region Flag_Instructions
 
+	/// <summary>
+	/// OPcode only.
+	/// Do not use for implementation, instead use ClearFlag.
+	/// </summary>
 	public void ClearCarry() => ClearFlag(CpuFlags.Carry);
 
+	/// <summary>
+	/// OPcode only.
+	/// Do not use for implementation, instead use ClearFlag.
+	/// </summary>
 	public void ClearDecimalMode() => ClearFlag(CpuFlags.DecimalMode);
 
+	/// <summary>
+	/// OPcode only.
+	/// Do not use for implementation, instead use ClearFlag.
+	/// </summary>
 	public void ClearInterruptDisable() => ClearFlag(CpuFlags.InterruptDisable);
 
+	/// <summary>
+	/// OPcode only.
+	/// Do not use for implementation, instead use ClearFlag.
+	/// </summary>
 	public void ClearOverflowFlag() => ClearFlag(CpuFlags.Overflow);
 
+	/// <summary>
+	/// OPcode only.
+	/// Do not use for implementation, instead use SetFlag.
+	/// </summary>
 	public void SetCarry() => SetFlag(CpuFlags.Carry);
 
+	/// <summary>
+	/// OPcode only.
+	/// Do not use for implementation, instead use SetFlag.
+	/// </summary>
 	public void SetDecimal() => SetFlag(CpuFlags.DecimalMode);
 
-	public void SetInterruptDisable => SetFlag(CpuFlags.InterruptDisable);
+	/// <summary>
+	/// OPcode only.
+	/// Do not use for implementation, instead use SetFlag.
+	/// </summary>
+	public void SetInterruptDisable() => SetFlag(CpuFlags.InterruptDisable);
+
+	#endregion
+
+	#region Comparisons
+
+	public void CompareAccumulator(AddressingMode addressingMode) =>
+		CompareRegister(mem_read(addressingMode), _registerA);
+
+	public void CompareXRegister(AddressingMode addressingMode) =>
+		CompareRegister(mem_read(addressingMode), _registerX);
+
+	public void CompareYRegister(AddressingMode addressingMode) =>
+		CompareRegister(mem_read(addressingMode), _registerY);
+
+	private void CompareRegister(byte value, byte register)
+	{
+		if (register == value)
+		{
+			SetFlag(CpuFlags.Carry);
+			SetFlag(CpuFlags.Zero);
+		}
+		else if (register < value)
+		{
+			ClearFlag(CpuFlags.Carry);
+			ClearFlag(CpuFlags.Zero);
+		}
+		else if (register > value)
+		{
+			SetFlag(CpuFlags.Carry);
+			ClearFlag(CpuFlags.Zero);
+		}
+	}
 
 	#endregion
 }
