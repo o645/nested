@@ -292,4 +292,22 @@ public partial class Cpu
 	}
 
 	#endregion
+
+	#region Flag_Instructions
+
+	public void ClearCarry() => ClearFlag(CpuFlags.Carry);
+
+	public void ClearDecimalMode() => ClearFlag(CpuFlags.DecimalMode);
+
+	public void ClearInterruptDisable() => ClearFlag(CpuFlags.InterruptDisable);
+
+	public void ClearOverflowFlag() => ClearFlag(CpuFlags.Overflow);
+
+	public void SetCarry() => SetFlag(CpuFlags.Carry);
+
+	public void SetDecimal() => SetFlag(CpuFlags.DecimalMode);
+
+	public void SetInterruptDisable => SetFlag(CpuFlags.InterruptDisable);
+
+	#endregion
 }
