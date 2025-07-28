@@ -2,20 +2,6 @@ namespace NestedSharp;
 
 public partial class Cpu
 {
-	private void Jump(AddressingMode addressingMode)
-	{
-		switch (addressingMode)
-		{
-			case AddressingMode.Absolute:
-				//Jumps to the address specified in the next byte.
-				_programCounter = mem_read(addressingMode);
-				break;
-			case AddressingMode.Indirect:
-
-				break;
-		}
-	}
-
 	#region Transfer_Instructions
 
 	public void LoadAccumulator(AddressingMode addressingMode)
@@ -394,6 +380,37 @@ public partial class Cpu
 		//add the signed byte to the program counter's value.
 		var res = _programCounter + signed;
 		_programCounter = (byte)res;
+	}
+
+	#endregion
+
+	#region Jumps and Subroutines
+
+	private void Jump(AddressingMode addressingMode)
+	{
+		switch (addressingMode)
+		{
+			case AddressingMode.Absolute:
+				_programCounter = mem_read(addressingMode);
+				break;
+			case AddressingMode.Indirect:
+				ushort address = mem_read_u16(addressingMode);
+				_programCounter = mem_read(address);
+				break;
+		}
+	}
+
+	public void JumpToSubroutine(AddressingMode addressingMode)
+	{
+		StackPush(_programCounter);
+		Jump(addressingMode);
+	}
+
+	public void ReturnFromSubroutine()
+	{
+		byte returnCounter = StackPop();
+		returnCounter++;
+		_programCounter = returnCounter;
 	}
 
 	#endregion
