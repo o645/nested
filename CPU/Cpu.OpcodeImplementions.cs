@@ -2,18 +2,6 @@ namespace NestedSharp;
 
 public partial class Cpu
 {
-	public void BranchifCarryClear(AddressingMode mode)
-	{
-		//if the carry flag is clear
-
-		//the next value is treated as a signed byte.
-		var unsigned = mem_read(AddressingMode.Immediate);
-		var signed = (sbyte)unsigned;
-		//add the signed byte to the program counter's value.
-		var res = _programCounter + signed;
-		_programCounter = (byte)res;
-	}
-
 	private void Jump(AddressingMode addressingMode)
 	{
 		switch (addressingMode)
@@ -367,6 +355,45 @@ public partial class Cpu
 			SetFlag(CpuFlags.Carry);
 			ClearFlag(CpuFlags.Zero);
 		}
+	}
+
+	#endregion
+
+	#region Conditional Branch Instructions
+
+	public void BranchOnCarryClear() => BranchOnFlagClear(CpuFlags.Carry);
+	public void BranchOnCarrySet() => BranchOnFlagSet(CpuFlags.Carry);
+	public void BranchOnEqual() => BranchOnFlagSet(CpuFlags.Zero);
+	public void BranchOnNotEqual() => BranchOnFlagClear(CpuFlags.Zero);
+	public void BranchOnMinus() => BranchOnFlagSet(CpuFlags.Negative);
+	public void BranchOnPlus() => BranchOnFlagClear(CpuFlags.Negative);
+	public void BranchOnOverflowSet() => BranchOnFlagSet(CpuFlags.Overflow);
+	public void BranchOnOverflowClear() => BranchOnFlagClear(CpuFlags.Overflow);
+
+	public void BranchOnFlagSet(CpuFlags flag)
+	{
+		if (IsFlagSet(flag))
+		{
+			Branch();
+		}
+	}
+
+	public void BranchOnFlagClear(CpuFlags flag)
+	{
+		if (!IsFlagSet(flag))
+		{
+			Branch();
+		}
+	}
+
+	public void Branch()
+	{
+		//the next value is treated as a signed byte.
+		var unsigned = mem_read(AddressingMode.Immediate);
+		var signed = (sbyte)unsigned;
+		//add the signed byte to the program counter's value.
+		var res = _programCounter + signed;
+		_programCounter = (byte)res;
 	}
 
 	#endregion
