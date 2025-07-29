@@ -87,33 +87,85 @@ public partial class Cpu
 			var opcode = CpuOpcodes.OpcodesDict[mem_read(_programCounter)];
 			switch (opcode.Mnemonic)
 			{
-				case BRK:
-					return;
-				case LDA:
-					LoadAccumulator(opcode.AddressingMode);
-					break;
-				case TAX:
-					TransferAccumulatorToX();
-					break;
-				case INX:
-					IncrementX();
-					break;
-				case TAY:
-					TransferAccumulatorToY();
-					break;
-				case INY:
-					IncrementY();
-					break;
 				case ADC:
 					AddWithCarry(opcode.AddressingMode);
+					break;
+				case AND:
+					AndWithAccumulator(opcode.AddressingMode);
+					break;
+				case ASL:
+					ArithmeticShiftLeft(opcode.AddressingMode);
+					break;
+				case BCC:
+					BranchOnCarryClear();
+					break;
+				case BCS:
+					BranchOnCarrySet();
+					break;
+				case BEQ:
+					BranchOnEqual();
+					break;
+				case BIT:
+					break;
+				case BMI:
+					BranchOnMinus();
+					break;
+				case BNE:
+					BranchOnNotEqual();
+					break;
+				case BPL:
+					BranchOnPlus();
+					break;
+				case BRK:
+					Break();
+					break;
+				case BVC:
+					BranchOnOverflowClear();
+					break;
+				case BVS:
+					BranchOnCarrySet();
+					break;
+				case CLC:
+					ClearCarry();
+					break;
+				case CLD:
+					ClearDecimalMode();
+					break;
+				case CLI:
+					ClearInterruptDisable();
+					break;
+				case CLV:
+					ClearOverflowFlag();
+					break;
+				case CMP:
+					CompareAccumulator(opcode.AddressingMode);
+					break;
+				case CPX:
+					CompareXRegister(opcode.AddressingMode);
+					break;
+				case CPY:
+					CompareYRegister(opcode.AddressingMode);
+					break;
+				case DEC:
+					DecrementMemory(opcode.AddressingMode);
+					break;
+				case DEX:
+					DecrementX();
+					break;
+				case DEY:
+					DecrementY();
+					break;
+				case EOR:
+					ExclusiveORWithAccumulator(opcode.AddressingMode);
 					break;
 				case INC:
 					IncrementMemory(opcode.AddressingMode);
 					break;
-				case JMP:
-					Jump(opcode.AddressingMode);
+				case INX:
+					IncrementX();
 					break;
-				case NOP:
+				case INY:
+					IncrementY();
 					break;
 
 				default:
@@ -171,10 +223,7 @@ public partial class Cpu
 		}
 	}
 
-	private byte mem_read(ushort address)
-	{
-		return _memory[address];
-	}
+	private byte mem_read(ushort address) => _memory[address];
 
 	private void mem_write(ushort address, byte value)
 	{

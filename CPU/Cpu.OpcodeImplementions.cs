@@ -2,6 +2,15 @@ namespace NestedSharp;
 
 public partial class Cpu
 {
+	#region Interrupts
+
+	public void Break()
+	{
+		//push onto stack...
+	}
+
+	#endregion
+
 	#region Transfer_Instructions
 
 	public void LoadAccumulator(AddressingMode addressingMode)
@@ -174,7 +183,7 @@ public partial class Cpu
 		_registerA = (byte)(_registerA + value + carry);
 		UpdateZeroFlag(_registerA);
 		UpdateStatusNegativeFlag(_registerA);
-		if (_registerA + value + carry > Byte.MaxValue) UpdateStatusCarryFlag(true);
+		if (_registerA + value + carry > byte.MaxValue) UpdateStatusCarryFlag(true);
 	}
 
 	public void SubtractWithCarry(AddressingMode mode)
@@ -184,7 +193,7 @@ public partial class Cpu
 		_registerA = (byte)(_registerA - value - carry);
 		UpdateZeroFlag(_registerA);
 		UpdateStatusNegativeFlag(_registerA);
-		if (_registerA + value + carry > Byte.MaxValue) UpdateStatusCarryFlag(true);
+		if (_registerA + value + carry > byte.MaxValue) UpdateStatusCarryFlag(true);
 	}
 
 	#endregion
@@ -218,7 +227,7 @@ public partial class Cpu
 
 	public void ArithmeticShiftLeft(AddressingMode mode)
 	{
-		byte value = mem_read(mode);
+		var value = mem_read(mode);
 		// Shift the value left. Bit 0 gets set to 0.
 		var shiftedValue = (byte)(value << 1);
 
@@ -233,8 +242,8 @@ public partial class Cpu
 
 	public void LogicalShiftRight(AddressingMode mode)
 	{
-		byte value = mem_read(mode);
-		byte shifted = (byte)(value >> 1);
+		var value = mem_read(mode);
+		var shifted = (byte)(value >> 1);
 		mem_write(mode, shifted);
 		UpdateStatusNegativeFlag(shifted);
 		UpdateZeroFlag(shifted);
@@ -243,9 +252,9 @@ public partial class Cpu
 
 	public void RotateLeft(AddressingMode mode)
 	{
-		byte value = mem_read(mode);
-		byte carry = (byte)(IsFlagSet(CpuFlags.Carry) ? 0b0000_0001 : 0);
-		byte rotated = (byte)(value << 1);
+		var value = mem_read(mode);
+		var carry = (byte)(IsFlagSet(CpuFlags.Carry) ? 0b0000_0001 : 0);
+		var rotated = (byte)(value << 1);
 		rotated |= carry;
 		mem_write(mode, rotated);
 		UpdateStatusNegativeFlag(rotated);
@@ -255,9 +264,9 @@ public partial class Cpu
 
 	public void RotateRight(AddressingMode mode)
 	{
-		byte value = mem_read(mode);
-		byte carry = (byte)(IsFlagSet(CpuFlags.Carry) ? 0b1000_0000 : 0);
-		byte rotated = (byte)(1 >> value);
+		var value = mem_read(mode);
+		var carry = (byte)(IsFlagSet(CpuFlags.Carry) ? 0b1000_0000 : 0);
+		var rotated = (byte)(1 >> value);
 		rotated |= carry;
 		mem_write(mode, rotated);
 		UpdateStatusNegativeFlag(rotated);
@@ -270,59 +279,86 @@ public partial class Cpu
 	#region Flag_Instructions
 
 	/// <summary>
-	/// OPcode only.
-	/// Do not use for implementation, instead use ClearFlag.
+	///     OPcode only.
+	///     Do not use for implementation, instead use ClearFlag.
 	/// </summary>
-	public void ClearCarry() => ClearFlag(CpuFlags.Carry);
+	public void ClearCarry()
+	{
+		ClearFlag(CpuFlags.Carry);
+	}
 
 	/// <summary>
-	/// OPcode only.
-	/// Do not use for implementation, instead use ClearFlag.
+	///     OPcode only.
+	///     Do not use for implementation, instead use ClearFlag.
 	/// </summary>
-	public void ClearDecimalMode() => ClearFlag(CpuFlags.DecimalMode);
+	public void ClearDecimalMode()
+	{
+		ClearFlag(CpuFlags.DecimalMode);
+	}
 
 	/// <summary>
-	/// OPcode only.
-	/// Do not use for implementation, instead use ClearFlag.
+	///     OPcode only.
+	///     Do not use for implementation, instead use ClearFlag.
 	/// </summary>
-	public void ClearInterruptDisable() => ClearFlag(CpuFlags.InterruptDisable);
+	public void ClearInterruptDisable()
+	{
+		ClearFlag(CpuFlags.InterruptDisable);
+	}
 
 	/// <summary>
-	/// OPcode only.
-	/// Do not use for implementation, instead use ClearFlag.
+	///     OPcode only.
+	///     Do not use for implementation, instead use ClearFlag.
 	/// </summary>
-	public void ClearOverflowFlag() => ClearFlag(CpuFlags.Overflow);
+	public void ClearOverflowFlag()
+	{
+		ClearFlag(CpuFlags.Overflow);
+	}
 
 	/// <summary>
-	/// OPcode only.
-	/// Do not use for implementation, instead use SetFlag.
+	///     OPcode only.
+	///     Do not use for implementation, instead use SetFlag.
 	/// </summary>
-	public void SetCarry() => SetFlag(CpuFlags.Carry);
+	public void SetCarry()
+	{
+		SetFlag(CpuFlags.Carry);
+	}
 
 	/// <summary>
-	/// OPcode only.
-	/// Do not use for implementation, instead use SetFlag.
+	///     OPcode only.
+	///     Do not use for implementation, instead use SetFlag.
 	/// </summary>
-	public void SetDecimal() => SetFlag(CpuFlags.DecimalMode);
+	public void SetDecimal()
+	{
+		SetFlag(CpuFlags.DecimalMode);
+	}
 
 	/// <summary>
-	/// OPcode only.
-	/// Do not use for implementation, instead use SetFlag.
+	///     OPcode only.
+	///     Do not use for implementation, instead use SetFlag.
 	/// </summary>
-	public void SetInterruptDisable() => SetFlag(CpuFlags.InterruptDisable);
+	public void SetInterruptDisable()
+	{
+		SetFlag(CpuFlags.InterruptDisable);
+	}
 
 	#endregion
 
 	#region Comparisons
 
-	public void CompareAccumulator(AddressingMode addressingMode) =>
+	public void CompareAccumulator(AddressingMode addressingMode)
+	{
 		CompareRegister(mem_read(addressingMode), _registerA);
+	}
 
-	public void CompareXRegister(AddressingMode addressingMode) =>
+	public void CompareXRegister(AddressingMode addressingMode)
+	{
 		CompareRegister(mem_read(addressingMode), _registerX);
+	}
 
-	public void CompareYRegister(AddressingMode addressingMode) =>
+	public void CompareYRegister(AddressingMode addressingMode)
+	{
 		CompareRegister(mem_read(addressingMode), _registerY);
+	}
 
 	private void CompareRegister(byte value, byte register)
 	{
@@ -347,29 +383,54 @@ public partial class Cpu
 
 	#region Conditional Branch Instructions
 
-	public void BranchOnCarryClear() => BranchOnFlagClear(CpuFlags.Carry);
-	public void BranchOnCarrySet() => BranchOnFlagSet(CpuFlags.Carry);
-	public void BranchOnEqual() => BranchOnFlagSet(CpuFlags.Zero);
-	public void BranchOnNotEqual() => BranchOnFlagClear(CpuFlags.Zero);
-	public void BranchOnMinus() => BranchOnFlagSet(CpuFlags.Negative);
-	public void BranchOnPlus() => BranchOnFlagClear(CpuFlags.Negative);
-	public void BranchOnOverflowSet() => BranchOnFlagSet(CpuFlags.Overflow);
-	public void BranchOnOverflowClear() => BranchOnFlagClear(CpuFlags.Overflow);
+	public void BranchOnCarryClear()
+	{
+		BranchOnFlagClear(CpuFlags.Carry);
+	}
+
+	public void BranchOnCarrySet()
+	{
+		BranchOnFlagSet(CpuFlags.Carry);
+	}
+
+	public void BranchOnEqual()
+	{
+		BranchOnFlagSet(CpuFlags.Zero);
+	}
+
+	public void BranchOnNotEqual()
+	{
+		BranchOnFlagClear(CpuFlags.Zero);
+	}
+
+	public void BranchOnMinus()
+	{
+		BranchOnFlagSet(CpuFlags.Negative);
+	}
+
+	public void BranchOnPlus()
+	{
+		BranchOnFlagClear(CpuFlags.Negative);
+	}
+
+	public void BranchOnOverflowSet()
+	{
+		BranchOnFlagSet(CpuFlags.Overflow);
+	}
+
+	public void BranchOnOverflowClear()
+	{
+		BranchOnFlagClear(CpuFlags.Overflow);
+	}
 
 	public void BranchOnFlagSet(CpuFlags flag)
 	{
-		if (IsFlagSet(flag))
-		{
-			Branch();
-		}
+		if (IsFlagSet(flag)) Branch();
 	}
 
 	public void BranchOnFlagClear(CpuFlags flag)
 	{
-		if (!IsFlagSet(flag))
-		{
-			Branch();
-		}
+		if (!IsFlagSet(flag)) Branch();
 	}
 
 	public void Branch()
@@ -394,7 +455,7 @@ public partial class Cpu
 				_programCounter = mem_read(addressingMode);
 				break;
 			case AddressingMode.Indirect:
-				ushort address = mem_read_u16(addressingMode);
+				var address = mem_read_u16(addressingMode);
 				_programCounter = mem_read(address);
 				break;
 		}
@@ -408,7 +469,7 @@ public partial class Cpu
 
 	public void ReturnFromSubroutine()
 	{
-		byte returnCounter = StackPop();
+		var returnCounter = StackPop();
 		returnCounter++;
 		_programCounter = returnCounter;
 	}

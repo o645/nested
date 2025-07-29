@@ -63,24 +63,16 @@ public partial class Cpu
 	public void SetCarryFlagRightShift(byte value)
 	{
 		if ((value & 0b0000_0001) != 0)
-		{
 			SetFlag(CpuFlags.Carry);
-		}
 		else
-		{
 			ClearFlag(CpuFlags.Carry);
-		}
 	}
 
 	public void SetCarryFlagLeftShift(byte value)
 	{
 		if ((value & 0b1000_0000) != 0)
-		{
 			SetFlag(CpuFlags.Carry);
-		}
 		else
-		{
 			ClearFlag(CpuFlags.Carry);
-		}
 	}
 }
